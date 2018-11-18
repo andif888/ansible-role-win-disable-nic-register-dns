@@ -1,0 +1,16 @@
+---
+# tasks file for ansible-role-win-disable-nic-register-dns
+- name: Nat NIC get register DNS
+  win_shell: |
+    $test = (Get-NetAdapter "{{ nic_register_dns_disabled }}" | Get-DnsClient).RegisterThisConnectionsAddress
+    Write-Host $test
+  register: nic_dns
+  changed_when: False
+
+- debug:
+    var: nic_dns.stdout
+
+- name: Nat NIC disable register DNS
+  win_shell: |
+    Get-NetAdapter "{{ nic_register_dns_disabled }}" | Set-DnsClient -RegisterThisConnectionsAddress $false
+  when: nic_dns.stdout is match("True*")
