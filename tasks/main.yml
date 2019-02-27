@@ -14,3 +14,9 @@
   win_shell: |
     Get-NetAdapter "{{ nic_register_dns_disabled }}" | Set-DnsClient -RegisterThisConnectionsAddress $false
   when: nic_dns.stdout is match("True*")
+
+- name: Change Interface Metric
+  win_shell: |
+    Set-NetIPInterface -InterfaceAlias "{{ nic_register_dns_disabled }}" -AddressFamily "IPv4" -InterfaceMetric {{ nic_change_interface_metric }}
+    Set-NetIPInterface -InterfaceAlias "{{ nic_register_dns_disabled }}" -AddressFamily "IPv6" -InterfaceMetric {{ nic_change_interface_metric }}
+  when: nic_change_interface_metric is defined
